@@ -4,7 +4,7 @@
     { nix-templates, ... }@inputs:
     {
       # nix flake init -t github:msalmanrafadhlih/nixdev#<template>
-      templates = import ./templates.nix nix-templates;
+      templates = import ./templates.nix { inherit nix-templates; };
 
       # nix develop github:msalmanrafadhlih/nixdev#<template> --impure
       devShells = import ./devShells.nix inputs;
