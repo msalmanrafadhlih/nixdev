@@ -37,7 +37,13 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            android_sdk.accept_license = true;
+            allowUnfree = true;
+          };
+        };
 
         # === ISI SEBELUM BUILD ===
         pname = "my-app"; # <-- samakan dengan "name" di package.json
@@ -59,6 +65,8 @@
             modules = [ ./devenv.nix ];
           };
         };
+
+        devenvModules.default = import ./devenv.nix {inherit pkgs;};
 
         # package: untuk build production dengan Nix
         # Menggunakan pnpm.fetchDeps karena devenv juga pakai pnpm
