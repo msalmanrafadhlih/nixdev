@@ -3,7 +3,7 @@
   outputs =
     { nix-templates, ... }@inputs:
     let
-      lib = inputs.nixpkgs-lib;
+      lib = inputs.nixpkgs-lib.lib;
     in
     {
       # nix flake init -t github:msalmanrafadhlih/nix.templates#<template>
@@ -27,7 +27,7 @@
     };
 
   inputs = {
-    nixpkgs-lib = "github:NixOS/nixpkgs/nixos-unstable?dir=lib";
+    nixpkgs-lib.url = "github:NixOS/nixpkgs/nixos-unstable?dir=lib";
 
     # templates
     nix-templates.url = "github:nix-community/templates";
