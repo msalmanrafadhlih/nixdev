@@ -113,6 +113,6 @@
       }
     )
     // {
-      devenvModules.default = import ./devenv.nix;
+      devenvModules.default = import ./devenv.nix { templateInputs = inputs; };
     };
 }
