@@ -6,7 +6,7 @@
     fenix.packages.${system}.stable.rustc
     fenix.packages.${system}.stable.rust-src
     fenix.packages.${system}.stable.rust-analyzer
-    fenix.packages.${system}.stable.clipy
+    fenix.packages.${system}.stable.clippy
     fenix.packages.${system}.stable.rustfmt
   ];
 in {
