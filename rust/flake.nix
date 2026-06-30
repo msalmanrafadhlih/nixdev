@@ -52,8 +52,8 @@
         };
       in
       {
-        devShells.default     = import ./devenv.nix {inherit pkgs inputs toolchain;};
-        devenvModules.default = import ./devenv.nix { inherit toolchain; };
+        devShells.default = import ./devenv.nix { inherit pkgs inputs toolchain; };
+        devenvModules.default = import ./devenv.nix { inherit toolchain pkgs inputs; };
 
         # Build project sebagai paket Nix
         packages.default = naerskLib.buildPackage {
