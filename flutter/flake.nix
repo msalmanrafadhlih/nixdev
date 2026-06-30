@@ -14,17 +14,18 @@
         };
       in
       {
-        # nix develop .#default --inpure 
+        # nix develop .#default --inpure
         devShells.default = inputs.devenv.lib.mkShell {
           inherit inputs pkgs;
           modules = [
-            ./devenv.nix  
+            ./devenv.nix
           ];
         };
-
-        devenvModules.default = import ./devenv.nix {inherit pkgs inputs;};
       }
-    );
+    )
+    // {
+      devenvModules.default = import ./devenv.nix;
+    };
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
