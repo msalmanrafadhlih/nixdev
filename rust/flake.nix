@@ -11,8 +11,8 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    naersk = {
-      url = "github:nix-community/naersk";
+    crane = {
+      url = "github:ipetkov/crane";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -21,7 +21,7 @@
     {
       nixpkgs,
       fenix,
-      naersk,
+      crane,
       flake-utils,
       ...
     }@inputs:
@@ -30,17 +30,28 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config = {
-            allowUnfree = true;
-          };
         };
 
         # Toolchain juga didefinisikan di sini untuk naersk
         toolchain = fenix.packages.${system}.stable.toolchain;
-        naerskLib = pkgs.callPackage naersk {
-          cargo = toolchain;
-          rustc = toolchain;
+        craneLib = (crane.mkLib pkgs).overrideToolchain toolchain;
+
+        commonArgs = {
+          src = craneLib.cleanCargoSource (craneLib.path ./.);
+          strictDeps = true;
+
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          buildInputs = [ pkgs.openssl ];
         };
+
+        cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+
+        my-app = craneLib.buildPackage (
+          commonArgs
+          // {
+            inherit cargoArtifacts;
+          }
+        );
       in
       {
         devShells.default = inputs.devenv.lib.mkShell {
@@ -51,7 +62,21 @@
         };
 
         # Build project sebagai paket Nix
-        packages.default = naerskLib.buildPackage { src = ./.; };
+        packages.default = my-app;
+        checks = {
+          clippy = craneLib.cargoClippy {
+            src = craneLib.cleanCargoSource ./.;
+            inherit cargoArtifacts;
+            cargoClippyExtraArgs = "--all-targets -- --deny warnings";
+          };
+          fmt = craneLib.cargoFmt {
+            src = craneLib.cleanCargoSource ./.;
+          };
+          nextest = craneLib.cargoNextest {
+            src = craneLib.cleanCargoSource ./.;
+            inherit cargoArtifacts;
+          };
+        };
       }
     )
     // {
